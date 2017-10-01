@@ -144,7 +144,7 @@ public class MainActivity extends Activity {
             return;
 
         Map<String, Double> m = d.get(i);
-        setTemperature(m.get("Temperature") - i);
+        setTemperature(m.get("Temperature"));
         setCloudiness(m.get("TotalCloudCover"));
         setPrecipitation(m.get("Precipitation1h"));
         setHour(i);
