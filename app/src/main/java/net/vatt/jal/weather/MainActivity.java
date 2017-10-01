@@ -1,50 +1,49 @@
 package net.vatt.jal.weather;
 
 import android.Manifest;
-import android.app.Activity;
+import android.app.ActionBar;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
-import android.os.CountDownTimer;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.TextView;
+import android.os.CountDownTimer;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.view.MenuItem;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import net.vatt.jal.weather.FmiController.WeatherData;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
 
-public class MainActivity extends Activity {
+/**
+ * Created by ltr on 2.10.2017.
+ */
 
-    private final String tag = "Weather";
+public class MainActivity extends FragmentActivity {
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
+     * each object in a collection. We use a {@link android.support.v4.app.FragmentStatePagerAdapter}
+     * derivative, which will destroy and re-create fragments as needed, saving and restoring their
+     * state in the process. This is important to conserve memory and is a best practice when
+     * allowing navigation between objects in a potentially large collection.
+     */
+    WeatherPagerAdapter mWeatherPagerAdapter;
+    /**
+     * The {@link android.support.v4.view.ViewPager} that will display the object collection.
+     */
+    ViewPager mViewPager;
     private FmiController mFmiController;
     private LocationService mLocationService;
-    private long updateRate = 30000;
-    private WeatherData mCurrentWeather;
-
-    private OnSuccessListener<WeatherData> mWeatherSuccessListener = new OnSuccessListener<WeatherData>() {
-        @Override
-        public void onSuccess(WeatherData w) {
-            setSpinnerVisible(false);
-            setWeatherUiVisible(true);
-            loadWeatherData(w);
-        }
-    };
+    private String location;
 
     private OnSuccessListener<Location> mLocationSuccessListener = new OnSuccessListener<Location>() {
         @Override
@@ -52,12 +51,11 @@ public class MainActivity extends Activity {
             if(location != null) {
                 String loc = LocationService.cityNameFromLocation(getApplicationContext(), location);
                 setLocation(loc);
-                Date date = addHours(removeMinutesAndSeconds(new Date()), 1);
-                mFmiController.getForecastData(loc, date, addHours(date, 24), 60,  mWeatherSuccessListener);
             }
         }
     };
 
+    private long updateRate = 30000;
     private CountDownTimer mWeatherTimer = new CountDownTimer(updateRate, updateRate) {
         @Override
         public void onTick(long l) {
@@ -66,50 +64,60 @@ public class MainActivity extends Activity {
 
         @Override
         public void onFinish() {
-            mLocationService.checkLocation(mLocationSuccessListener);
+            //mLocationService.checkLocation(mLocationSuccessListener);
             this.start();
         }
     };
 
-    private SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+    private ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            setDataIndex(i);
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
         }
 
         @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
 
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.d(tag, "Start");
-
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestLocationPermission();
 
-        mFmiController = new FmiController(this);
-        mLocationService = new LocationService(this);
+        // Create an adapter that when requested, will return a fragment representing an object in
+        // the collection.
+        //
+        // ViewPager and its adapters use support library fragments, so we must use
+        // getSupportFragmentManager.
+        mWeatherPagerAdapter = new WeatherPagerAdapter(getSupportFragmentManager());
 
+        mLocationService = new LocationService(this);
         mLocationService.checkLocation(mLocationSuccessListener);
 
-        SeekBar hourSeekBar = findViewById(R.id.hourSeekBar);
-        hourSeekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
-        loadIconLabelFont();
+        // Set up action bar.
+        final ActionBar actionBar = getActionBar();
+
+        // Specify that the Home button should show an "Up" caret, indicating that touching the
+        // button will take the user one step up in the application's hierarchy.
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // Set up the ViewPager, attaching the adapter.
+        mViewPager = findViewById(R.id.pager);
+        mViewPager.setAdapter(mWeatherPagerAdapter);
+        mViewPager.addOnPageChangeListener(mPageChangeListener);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mLocationService.checkLocation(mLocationSuccessListener);
+        //mLocationService.checkLocation(mLocationSuccessListener);
         mWeatherTimer.start();
     }
 
@@ -119,113 +127,62 @@ public class MainActivity extends Activity {
         mWeatherTimer.cancel();
     }
 
-    private void setLocation(String loc) {
-        TextView cityLabel = findViewById(R.id.cityLabel);
-        cityLabel.setText(loc);
-    }
-
-    private void setDate(Date date) {
-        TextView dateLabel = findViewById(R.id.dateLabel);
-        dateLabel.setText(dateToLocalTimeString(date));
-    }
-
-    private void setHour(int h) {
-        setDate(addHours(mCurrentWeather.startTime, h));
-    }
-
-    private void loadWeatherData(WeatherData wd) {
-        mCurrentWeather = wd;
-        setDate(wd.startTime);
-        setDataIndex(0);
-    }
-
-    private void setDataIndex(int i) {
-        List<Map<String, Double>> d = mCurrentWeather.getData();
-
-        if(d.size() < i)
-            return;
-
-        Map<String, Double> m = d.get(i);
-        setTemperature(m.get("Temperature"));
-        setCloudiness(m.get("TotalCloudCover"));
-        setPrecipitation(m.get("Precipitation1h"));
-        setIcon(m.get("WeatherSymbol3").intValue());
-        setHour(i);
-    }
-
-    private void setTemperature(Double temp) {
-        TextView temperatureLabel = findViewById(R.id.temperatureLabel);
-        temperatureLabel.setTextColor(calculateTemperatureColor(temp));
-        temperatureLabel.setText(String.format(Locale.getDefault(), "%.1f °C", temp));
-    }
-
-    private void loadIconLabelFont() {
-        TextView iconLabel = findViewById(R.id.iconLabel);
-        Typeface font = Typeface.createFromAsset(getAssets(), "weathericons-regular-webfont.ttf");
-        iconLabel.setTypeface(font);
-    }
-
-    private void setIcon(int code) {
-        TextView iconLabel = findViewById(R.id.iconLabel);
-        Calendar cal = Calendar.getInstance();
-        String iconName;
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        if(hour < 6 || hour > 20)
-            iconName = WeatherIcons.getNameForIconCodeNight(code);
-        else
-            iconName = WeatherIcons.getNameForIconCodeDay(code);
-        iconLabel.setText(getStringResourceByName(iconName));
-    }
-
-    private int calculateTemperatureColor(Double temp) {
-        int max_temp = 25;
-        int min_temp = -25;
-
-        double red, green, blue;
-        if(temp > 0.0) {
-            red = temp > max_temp ? 255 : temp / max_temp * 255;
-            green = 100;
-            blue = 255 - red < 50 ? 50 : 255 - red;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // This is called when the Home (Up) button is pressed in the action bar.
+                // Create a simple intent that starts the hierarchical parent activity and
+                // use NavUtils in the Support Package to ensure proper handling of Up.
+                Intent upIntent = new Intent(this, MainActivity.class);
+                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                    // This activity is not part of the application's task, so create a new task
+                    // with a synthesized back stack.
+                    TaskStackBuilder.from(this)
+                            // If there are ancestor activities, they should be added here.
+                            .addNextIntent(upIntent)
+                            .startActivities();
+                    finish();
+                } else {
+                    // This activity is part of the application's task, so simply
+                    // navigate up to the hierarchical parent activity.
+                    NavUtils.navigateUpTo(this, upIntent);
+                }
+                return true;
         }
-        else {
-            red = temp < min_temp ? 255 : Math.abs(temp) / Math.abs(min_temp) * 255;
-            blue = 255;
-            green = temp < min_temp ? 255 : Math.min(Math.abs(temp) / Math.abs(min_temp) * 255 + 100, 255);
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * A {@link android.support.v4.app.FragmentStatePagerAdapter} that returns a fragment
+     * representing an object in the collection.
+     */
+    public static class WeatherPagerAdapter extends FragmentStatePagerAdapter {
+
+        //private List<WeatherFragment> fragmentList = new ArrayList<>();
+
+        public WeatherPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
-        return Color.rgb((int)red, (int)green, (int)blue);
-    }
-
-    private void setCloudiness(Double cloudiness) {
-        TextView cloudinessLabel = findViewById(R.id.cloudinessLabel);
-        String percentage = Integer.toString(cloudiness.intValue());
-        cloudinessLabel.setText(getString(R.string.cloudiness) + ": " + percentage + "% ");
-    }
-
-    private void setPrecipitation(Double precipitation) {
-        TextView rainLabel = findViewById(R.id.rainLabel);
-        rainLabel.setText(getString(R.string.rain) + ": " + precipitation.toString() + " mm/h");
-    }
-
-    private void setSpinnerVisible(boolean visible) {
-        ProgressBar spinner = findViewById(R.id.loadingSpinner);
-        spinner.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    private void setWeatherUiVisible(boolean visible) {
-        ConstraintLayout layout = findViewById(R.id.mainLayout);
-        for(int i = 0; i < layout.getChildCount(); i++) {
-            View v = layout.getChildAt(i);
-            if(v.getId() == R.id.loadingSpinner)
-                continue;
-            v.setVisibility(visible ? View.VISIBLE : View.GONE);
+        @Override
+        public Fragment getItem(int i) {
+            final WeatherFragment fragment = new WeatherFragment();
+            Bundle args = new Bundle();
+            args.putInt("Position", i);
+            fragment.setArguments(args);
+            return fragment;
         }
-    }
 
-    private String getStringResourceByName(String resName) {
-        String packageName = getPackageName();
-        int resId = getResources().getIdentifier(resName, "string", packageName);
-        return getString(resId);
+        @Override
+        public int getCount() {
+            return 10;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "OBJECT " + (position + 1);
+        }
     }
 
     private void requestLocationPermission() {
@@ -242,26 +199,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    private Date addHours(Date date, int hours) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.HOUR_OF_DAY, hours);
-        return calendar.getTime();
-    }
-
-    private Date removeMinutesAndSeconds(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        return calendar.getTime();
-    }
-
-    private String dateToLocalTimeString(Date date) {
-        Calendar cal = Calendar.getInstance();
-        TimeZone tz = cal.getTimeZone();
-        SimpleDateFormat format = new SimpleDateFormat("E d MMM HH:mm", Locale.getDefault());
-        format.setTimeZone(tz);
-        return format.format(date);
+    private void setLocation(String loc) {
+        location = loc;
     }
 }
+

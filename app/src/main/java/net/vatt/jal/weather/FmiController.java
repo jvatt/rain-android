@@ -101,6 +101,7 @@ public class FmiController extends ContextWrapper {
         Log.d(tag, "Getting weather for " + location);
 
         initializeVolleyQueue();
+        // TODO: to cover a larger timespan we need to change the forecast method, HIRLAM gives only 54 hours of data
         String url = "http://data.fmi.fi/fmi-apikey/" + FM_API_KEY + "/wfs?request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::point::multipointcoverage&place="
                 + location
                 + "&starttime=" + dateToIso8601(start)
