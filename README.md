@@ -4,4 +4,4 @@ Very simplistic weather application for Android. Retrieves and displays weather 
 
 Weather data is received from FMI open data API (https://en.ilmatieteenlaitos.fi/open-data)
 
-Weather icons by Erik Flowers https://erikflowers.github.io/weather-icons/
+Weather icons by Erik Flowers (https://erikflowers.github.io/weather-icons)
