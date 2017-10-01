@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
@@ -102,6 +103,7 @@ public class MainActivity extends Activity {
 
         SeekBar hourSeekBar = findViewById(R.id.hourSeekBar);
         hourSeekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
+        loadIconLabelFont();
     }
 
     @Override
@@ -123,7 +125,7 @@ public class MainActivity extends Activity {
     }
 
     private void setDate(Date date) {
-        TextView dateLabel = findViewById(R.id.dateLabel);;
+        TextView dateLabel = findViewById(R.id.dateLabel);
         dateLabel.setText(dateToLocalTimeString(date));
     }
 
@@ -147,14 +149,32 @@ public class MainActivity extends Activity {
         setTemperature(m.get("Temperature"));
         setCloudiness(m.get("TotalCloudCover"));
         setPrecipitation(m.get("Precipitation1h"));
+        setIcon(m.get("WeatherSymbol3").intValue());
         setHour(i);
     }
 
     private void setTemperature(Double temp) {
-
         TextView temperatureLabel = findViewById(R.id.temperatureLabel);
         temperatureLabel.setTextColor(calculateTemperatureColor(temp));
-        temperatureLabel.setText(temp.toString() + " °C");
+        temperatureLabel.setText(String.format(Locale.getDefault(), "%.1f °C", temp));
+    }
+
+    private void loadIconLabelFont() {
+        TextView iconLabel = findViewById(R.id.iconLabel);
+        Typeface font = Typeface.createFromAsset(getAssets(), "weathericons-regular-webfont.ttf");
+        iconLabel.setTypeface(font);
+    }
+
+    private void setIcon(int code) {
+        TextView iconLabel = findViewById(R.id.iconLabel);
+        Calendar cal = Calendar.getInstance();
+        String iconName;
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        if(hour < 6 || hour > 20)
+            iconName = WeatherIcons.getNameForIconCodeNight(code);
+        else
+            iconName = WeatherIcons.getNameForIconCodeDay(code);
+        iconLabel.setText(getStringResourceByName(iconName));
     }
 
     private int calculateTemperatureColor(Double temp) {
@@ -187,18 +207,37 @@ public class MainActivity extends Activity {
         rainLabel.setText(getString(R.string.rain) + ": " + precipitation.toString() + " mm/h");
     }
 
+    private void setSpinnerVisible(boolean visible) {
+        ProgressBar spinner = findViewById(R.id.loadingSpinner);
+        spinner.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private void setWeatherUiVisible(boolean visible) {
+        ConstraintLayout layout = findViewById(R.id.mainLayout);
+        for(int i = 0; i < layout.getChildCount(); i++) {
+            View v = layout.getChildAt(i);
+            if(v.getId() == R.id.loadingSpinner)
+                continue;
+            v.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private String getStringResourceByName(String resName) {
+        String packageName = getPackageName();
+        int resId = getResources().getIdentifier(resName, "string", packageName);
+        return getString(resId);
+    }
+
     private void requestLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            } else {
                 ActivityCompat.requestPermissions(this,
-                        new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION  }, 666);
-
+                        new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 666);
             }
         }
     }
@@ -224,20 +263,5 @@ public class MainActivity extends Activity {
         SimpleDateFormat format = new SimpleDateFormat("E d MMM HH:mm", Locale.getDefault());
         format.setTimeZone(tz);
         return format.format(date);
-    }
-
-    private void setSpinnerVisible(boolean visible) {
-        ProgressBar spinner = findViewById(R.id.loadingSpinner);
-        spinner.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    private void setWeatherUiVisible(boolean visible) {
-        ConstraintLayout layout = findViewById(R.id.mainLayout);
-        for(int i = 0; i < layout.getChildCount(); i++) {
-            View v = layout.getChildAt(i);
-            if(v.getId() == R.id.loadingSpinner)
-                continue;
-            v.setVisibility(visible ? View.VISIBLE : View.GONE);
-        }
     }
 }
