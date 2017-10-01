@@ -2,4 +2,48 @@
     <string name="app_name">Weather</string>
     <string name="cloudiness">Cloudiness</string>
     <string name="rain">Rain</string>
+    <string name="fmi_disclaimer">Data provided by the Finnish Meteorological Institute</string>
+
+    <!-- Weather icons -->
+    <string name="wi_night_clear">&#xf02e;</string>
+    <string name="wi_day_clear">&#xf00d;</string>
+
+    <string name="wi_night_half_cloudy">&#xf086;</string>
+    <string name="wi_day_half_cloudy">&#xf002;</string>
+
+    <string name="wi_night_cloudy">&#xf013;</string>
+    <string name="wi_day_cloudy">&#xf013;</string>
+
+    <string name="wi_night_weak_showers">&#xf0b4;</string>
+    <string name="wi_day_weak_showers">&#xf0b2;</string>
+
+    <string name="wi_night_showers">&#xf037;</string>
+    <string name="wi_day_showers">&#xf009;</string>
+
+    <string name="wi_night_strong_showers">&#xf026;</string>
+    <string name="wi_day_strong_showers">&#xf006;</string>
+
+    <string name="wi_night_rain">&#xf015;</string>
+    <string name="wi_day_rain">&#xf015;</string>
+
+    <string name="wi_night_strong_rain">&#xf019;</string>
+    <string name="wi_day_strong_rain">&#xf019;</string>
+
+    <string name="wi_night_snow_shower">&#xf02a;</string>
+    <string name="wi_day_snow_shower">&#xf00a;</string>
+
+    <string name="wi_night_snow">&#xf01b;</string>
+    <string name="wi_day_snow">&#xf01b;</string>
+
+    <string name="wi_night_heavy_thunder">&#xf02d;</string>
+    <string name="wi_day_heavy_thunder">&#xf010;</string>
+
+    <string name="wi_night_thunder">&#xf02c;</string>
+    <string name="wi_day_thunder">&#xf00e;</string>
+
+    <string name="wi_night_light_fog">&#xf04a;</string>
+    <string name="wi_day_light_fog">&#xf003;</string>
+
+    <string name="wi_night_fog">&#xf014;</string>
+    <string name="wi_day_fog">&#xf014;</string>
 </resources>
