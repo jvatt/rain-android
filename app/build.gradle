@@ -7,7 +7,7 @@ android {
         applicationId "net.vatt.jal.weather"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 30
+        versionCode 31
         versionName "0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
