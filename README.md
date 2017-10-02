@@ -1,4 +1,4 @@
-# rain-android
+# Minimal Weather
 
 Very simplistic weather application for Android. Retrieves and displays weather data based on the current location of the device.
 
