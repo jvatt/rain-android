@@ -8,7 +8,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -43,7 +42,6 @@ public class LocationService extends ContextWrapper {
         try {
             addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
         } catch (IOException e) {
-            Log.e(tag, "Error retrieving address from location");
             e.printStackTrace();
         }
         if(addresses != null && addresses.size() > 0)

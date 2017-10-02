@@ -2,7 +2,6 @@ package net.vatt.jal.weather;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -99,8 +98,6 @@ public class FmiController extends ContextWrapper {
     }
 
     public void getForecastData(String location, final Date start, final Date end, Integer timeStep, final OnSuccessListener<WeatherData> listener) {
-        Log.d(tag, "Getting weather for " + location);
-
         initializeVolleyQueue();
         String url = "http://data.fmi.fi/fmi-apikey/" + FM_API_KEY + "/wfs?request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::point::multipointcoverage&place="
                 + location

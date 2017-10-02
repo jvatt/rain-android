@@ -1,6 +1,5 @@
 package net.vatt.jal.weather;
 
-import android.util.Log;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -62,7 +61,6 @@ class FmiXmlParser {
                 }
             }
         } catch (XmlPullParserException | IOException e) {
-            Log.e(tag, "Error reading XML feed");
             e.printStackTrace();
         }
 
