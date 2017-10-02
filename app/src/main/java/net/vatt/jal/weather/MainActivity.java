@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
     private FmiController mFmiController;
     private LocationService mLocationService;
     private long updateRate = 600000; // update every ten minutes
-    private WeatherData mCurrentWeather;
+    private WeatherData mCurrentWeather = new WeatherData();
 
     private OnSuccessListener<WeatherData> mWeatherSuccessListener = new OnSuccessListener<WeatherData>() {
         @Override
@@ -138,7 +138,7 @@ public class MainActivity extends Activity {
     private void setDataIndex(int i) {
         List<Map<String, Double>> d = mCurrentWeather.getData();
 
-        if(d.size() < i)
+        if(d.size() < i || d.size() == 0)
             return;
 
         Map<String, Double> m = d.get(i);
