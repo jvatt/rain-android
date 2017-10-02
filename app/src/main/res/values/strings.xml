@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Weather</string>
+    <string name="app_name">Minimal Weather</string>
     <string name="cloudiness">Cloudiness</string>
     <string name="rain">Rain</string>
     <string name="fmi_disclaimer">Data provided by the Finnish Meteorological Institute</string>
