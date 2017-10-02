@@ -31,7 +31,7 @@ import java.util.TimeZone;
 public class MainActivity extends Activity {
     private FmiController mFmiController;
     private LocationService mLocationService;
-    private long updateRate = 30000;
+    private long updateRate = 600000; // update every ten minutes
     private WeatherData mCurrentWeather;
 
     private OnSuccessListener<WeatherData> mWeatherSuccessListener = new OnSuccessListener<WeatherData>() {
@@ -95,6 +95,7 @@ public class MainActivity extends Activity {
         mLocationService = new LocationService(this);
 
         mLocationService.checkLocation(mLocationSuccessListener);
+        mWeatherTimer.start();
 
         SeekBar hourSeekBar = findViewById(R.id.hourSeekBar);
         hourSeekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
