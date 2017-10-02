@@ -1,6 +1,6 @@
-# rain-android
+# Minimal Weather
 
-Very simplistic weather application for Android. Retrieves and displays weather data based on the current location of the device.
+A very simplistic weather application for Android. Retrieves and displays weather data based on the current location of the device.
 
 Weather data is received from FMI open data API (https://en.ilmatieteenlaitos.fi/open-data)
 
