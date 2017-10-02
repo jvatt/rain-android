@@ -22,7 +22,6 @@ import java.util.Locale;
  */
 
 public class LocationService extends ContextWrapper {
-    private final static String tag = "Weather.location";
     private FusedLocationProviderClient mFusedLocationClient;
 
     public LocationService (Context base) {

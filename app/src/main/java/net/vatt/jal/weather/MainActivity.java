@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 public class MainActivity extends Activity {
-
-    private final String tag = "Weather";
     private FmiController mFmiController;
     private LocationService mLocationService;
     private long updateRate = 30000;

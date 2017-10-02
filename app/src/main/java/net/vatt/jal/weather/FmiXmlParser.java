@@ -16,7 +16,6 @@ import java.util.List;
 
 class FmiXmlParser {
     private final String ns = null;
-    private final String tag = "Weather.XML";
     private final XmlPullParser parser;
 
     class WeatherDataTuple {

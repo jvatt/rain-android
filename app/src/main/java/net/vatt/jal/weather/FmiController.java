@@ -90,7 +90,6 @@ public class FmiController extends ContextWrapper {
     }
 
     private RequestQueue queue = null;
-    private final String tag = "Weather.FMI";
     private final String FM_API_KEY = "8e24585a-5c8e-432e-b765-c8de61f29c99";
 
     public FmiController(Context base) {
